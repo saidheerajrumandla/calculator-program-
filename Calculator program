@@ -22,6 +22,6 @@ def recfun():
      print("The division of two value are",div(a,b))
   else : 
     print("try again")
-    recfun()
+    recfun()#this function call executes if option chosen incorrectly
 
-recfun()
+recfun()#this function call is to start the selection of options
