@@ -1,0 +1,116 @@
+import tkinter as tk
+import tkinter.messagebox
+import time
+
+
+class countdowntimer(tk.Frame): 
+    def __init__(a, initial,**kwargs):
+        tk.Frame.__init__(a,initial,**kwargs)
+        a.time = 0
+        a.hours = 0
+        a.mins = 0
+        a.secs = 0
+        a.initial = initial
+        a.running = False
+        a.boxes()
+
+    def boxes(a):         
+        
+        a.countdowntime = tk.Entry(a)
+        a.countdowntime.grid(row=0, column=1)
+
+        a.clock = tk.Label(a, text="00:00:00", font=("Arial", 32), width=15)
+        a.clock.grid(row=1, column=1, stick="S")
+
+        a.initialtime = tk.Label(a, text="COUNTDOWN\n TIMER", font=("Arial", 30), width=15)
+        a.initialtime.grid(row=2, column=1, sticky="S")
+
+        a.startbutton = tk.Button(a, text="Start", command=lambda: a.start())
+        a.startbutton.grid(row=3, column=0, sticky="SW")
+
+        a.resetbutton = tk.Button(a, text="Reset", command=lambda: a.reset())
+        a.resetbutton.grid(row=3, column=1, sticky="SE")
+
+        a.closebutton = tk.Button(a, text="close", command=lambda: a.close())
+        a.closebutton.grid(row=3, column=3, sticky="SW")
+
+        a.pause_button = tk.Button(a, text="Pause", command=lambda: a.pause())
+        a.pause_button.grid(row = 3,column=2, sticky = "SE")
+
+        a.initial.bind("<Return>", lambda x: a.start())
+        a.countdowntime.bind("<Key>", lambda v: a.update())
+
+    def calculate(a):
+        
+        a.hours = a.time // 3600
+        a.mins = (a.time // 60) % 60
+        a.secs = a.time % 60
+        return "{:02d}:{:02d}:{:02d}".format(a.hours, a.mins, a.secs)
+
+    def update(a):
+        a.time = int(a.countdowntime.get())
+        try:
+            a.clock.configure(text=a.calculate())
+        except:
+            a.clock.configure(text="00:00:00")
+
+    def timer(a):
+        if a.running:
+            if a.time <= 0:
+                a.clock.configure(text="Time's up!")
+            else:
+                a.clock.configure(text=a.calculate())
+                a.time -= 1
+                a.after(1000, a.timer)
+
+    def start(a):
+        try:
+            a.time = int(a.countdowntime.get())
+            a.countdowntime.delete(0, 'end')
+        except:
+            a.time = a.time
+        a.startbutton.configure(text="Stop", command=lambda: a.stop())
+        a.master.bind("<Return>", lambda x: a.stop())
+        a.running = True
+        a.timer()
+
+    def stop(a):
+        a.startbutton.configure(text="Start", command=lambda: a.start())
+        a.master.bind("<Return>", lambda x: a.start())
+        a.running = False
+
+    def reset(a):
+        a.startbutton.configure(text="Start", command=lambda: a.start())
+        a.master.bind("<Return>", lambda x: a.start())
+        a.running = False
+        a.time = 0
+        a.clock["text"] = "00:00:00"
+
+    def close(a):
+        if tk.messagebox.askokcancel("close", "Do you want to close?"):
+            root.destroy()    
+
+    def pause(a):
+        a.pause_button.configure(text="Resume", command=lambda: a.resume())
+        a.master.bind("<Return>", lambda x: a.resume())
+        if a.running == True:
+            a.running = False
+        a.timer()
+      
+
+    def resume(a):
+        a.pause_button.configure(text="Pause", command=lambda: a.pause())
+        a.master.bind("<Return>", lambda x: a.pause())
+        if a.running == False:
+            a.running = True
+        a.timer()
+       
+
+            
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("COUNTDOWN TIMER-->MINOR PROJECT")
+    countdowntimer(root).pack(side="top", fill="y", expand=True)
+    root.mainloop()
